@@ -12,6 +12,7 @@ struct Art: Decodable, Identifiable {
     
     let title: String
     let artistDisplayName: String
+    let primaryImageSmall: String?
     
 }
 

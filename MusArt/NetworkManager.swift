@@ -7,7 +7,6 @@ class NetworkManager: ObservableObject {
     @Published var art = [Art]()
     @Published var objectIDs = [Int]()
     @Published var totalArts = Int()
-    var n = 0
     func loadData() {
         
         if let url = URL(string: "https://collectionapi.metmuseum.org/public/collection/v1/objects") {
@@ -47,7 +46,7 @@ class NetworkManager: ObservableObject {
         
         if objectIDs.count > 1 {
             
-            
+            let n = Int.random(in: 0...totalArts)
             
             if let url = URL(string:"https://collectionapi.metmuseum.org/public/collection/v1/objects/\(objectIDs[n])") {
                 let session = URLSession(configuration: .default)
@@ -63,9 +62,6 @@ class NetworkManager: ObservableObject {
                                 DispatchQueue.main.async {
                                   
                                         self.art.append(result)
-                                        self.n += 1
-                                        print(self.n)
-                                    
                                 }
                             } catch {
                                 print(error)

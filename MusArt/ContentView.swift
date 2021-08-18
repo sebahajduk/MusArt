@@ -11,6 +11,25 @@ extension Color {
     static let offwhite = Color(red: 0.9, green: 0.9, blue: 0.91)
 }
 
+extension String {
+    func load() -> UIImage {
+        
+        do {
+            guard let url = URL(string: self) else {
+                return UIImage()
+            }
+            
+            let data: Data = try Data(contentsOf: url)
+            
+            return UIImage(data: data) ?? UIImage()
+        } catch {
+            
+        }
+        
+        return UIImage()
+    }
+}
+
 struct ContentView: View {
     
     @State var search: String = ""
@@ -26,17 +45,20 @@ struct ContentView: View {
                     LazyVStack {
                         
                         ForEach(networkManager.art, id: \.objectID) { art in
-                            ArtCell(artistName: art.artistDisplayName, artTitle: art.title)
+                            ArtCell(artistName: art.artistDisplayName, artTitle: art.title, artImage: art.primaryImageSmall)
                                 .onAppear(perform: {
                                     networkManager.loadArt()
-                                    print("Scrolling")
+                                    print("\(art.objectID)")
                                 })
-                            
-                            
-                        }.background(Color.offwhite)
+                        }
+                        
+                        
+                        .background(Color.offwhite)
                         .padding(.top, 20)
                         .frame(maxWidth: .infinity)
-                    }
+                    }.onAppear(perform: {
+                        self.networkManager.loadData()
+                    })
                         .navigationBarItems(leading:
                                                 TextField("Search", text: $search),
                                             
@@ -58,11 +80,7 @@ struct ContentView: View {
                 }
                 
                 
-            }.onAppear(perform: {
-                self.networkManager.loadData()
-                
-                
-            })
+            }
             
             
         }
@@ -80,8 +98,9 @@ struct ContentView: View {
     struct ArtCell: View {
         
         let artistName: String?
-        //let artImage: String
         let artTitle: String?
+        let artImage: String?
+        
         
         var body: some View {
             ZStack(alignment: .center){
@@ -94,7 +113,12 @@ struct ContentView: View {
                 
                 VStack(alignment: .leading, spacing: 5) {
                     ZStack(alignment: .top) {
-                        Image("krzyk")
+                        Image(systemName: "rectangle.slash")
+                            .resizable()
+                            .frame(width: 170, height: 120)
+                            .foregroundColor(.gray)
+                            .padding(.top, 70)
+                        Image(uiImage: artImage!.load())
                             .resizable()
                             .cornerRadius(25)
                             .frame(width: 340, height: 240)
